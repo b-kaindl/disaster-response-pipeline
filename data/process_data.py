@@ -40,6 +40,8 @@ def clean_data(df: DataFrame) -> DataFrame:
     # remove useless values
     df = df.drop(index=df.loc[df.related == 2].index)
 
+    return df
+
 def save_data(df: DataFrame, database_filename: str) -> None:
     engine: Engine = create_engine('database_filename')
     df.to_sql('dp.messages', engine, index=False)
