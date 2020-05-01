@@ -1,23 +1,48 @@
 import sys
-mport numpy as np
+from typing import Callable
 import pandas as pd
 
-from sqlalchemy import create_engine
-from pd import DataFrame
+from sqlalchemy import create_engine, Engine
+from pandas import DataFrame, Series
 
-def load_data(messages_filepath, categories_filepath):
+def load_data(messages_filepath: str, categories_filepath: str) -> DataFrame:
 
-    msgs : DataFrame = pd.read_csv(messages_filepath)
+    msgs: DataFrame = pd.read_csv(messages_filepath)
+    cats: DataFrame = pd.read_csv(categories_filepath)
 
-    cats : DataFrame = pd.read_csv(categories_filepath)
+    df: DataFrame = pd.merge(msgs, cats, on='id')
+
+    return df
 
 
-def clean_data(df):
-    pass
+def clean_data(df: DataFrame) -> DataFrame:
+    # create a dataframe of the 36 individual category columns
+    cats: DataFrame = df.categories.str.split(';', expand=True)
 
+    # use first row to extract a list of new column names for categories.
+    # one way is to apply a lambda function that takes everything
+    # up to the second to last character of each string with slicing
+    row: Series = cats.iloc[0, :]
+    get_colnames: Callable[[str], str] = lambda x: x[:-2]
+    category_colnames: Series = row.map(get_colnames)
 
-def save_data(df, database_filename):
-    pass
+    cats.columns = category_colnames
+
+    for column in cats:
+    # set each value to be the last character of the string
+        cats[column] = cats[column].astype(str).str[-1]
+
+    # convert column from string to numeric
+        cats[column] = cats[column].astype(int)
+
+    df = df.drop(columns='categories').join(cats).drop_duplicates()
+
+    # remove useless values
+    df = df.drop(index=df.loc[df.related == 2].index)
+
+def save_data(df: DataFrame, database_filename: str) -> None:
+    engine: Engine = create_engine('database_filename')
+    df.to_sql('dp.messages', engine, index=False)
 
 
 def main():
