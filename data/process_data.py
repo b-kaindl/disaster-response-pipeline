@@ -2,7 +2,7 @@ import sys
 from typing import Callable
 import pandas as pd
 
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine
 from pandas import DataFrame, Series
 
 def load_data(messages_filepath: str, categories_filepath: str) -> DataFrame:
@@ -43,7 +43,7 @@ def clean_data(df: DataFrame) -> DataFrame:
     return df
 
 def save_data(df: DataFrame, database_filename: str) -> None:
-    engine: Engine = create_engine('database_filename')
+    engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('dp.messages', engine, index=False)
 
 
