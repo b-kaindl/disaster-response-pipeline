@@ -1,2 +1,5 @@
-env/
+project/
 prep_notebooks/
+.mypy_cache/
+*.pkl
+*.db
