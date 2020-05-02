@@ -3,3 +3,4 @@ prep_notebooks/
 .mypy_cache/
 *.pkl
 *.db
+__pycache__/
