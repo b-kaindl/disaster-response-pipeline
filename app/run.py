@@ -22,6 +22,10 @@ from typing import List
 app = Flask(__name__)
 
 def tokenize(text: str) -> List[str]:
+    """
+    Tokenize function from train_classifier.py
+    Normaliztes text data and creates responding tokens for NLP models
+    """
 #     normalize
     text = re.sub(r'[^a-zA-z0-9]',' ', text.lower())
 
