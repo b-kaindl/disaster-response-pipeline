@@ -22,6 +22,10 @@ from typing import List
 app = Flask(__name__)
 
 def tokenize(text: str) -> List[str]:
+    """
+    Tokenize function from train_classifier.py
+    Normaliztes text data and creates responding tokens for NLP models
+    """
 #     normalize
     text = re.sub(r'[^a-zA-z0-9]',' ', text.lower())
 
@@ -103,7 +107,7 @@ def index():
                 Bar(
                     name = 'Support',
                     x=labels,
-                    y=report_cv['support'],
+                    y=report_nocv['support'].iloc[:-4],
                     yaxis='y1'
 
                 ),
@@ -111,21 +115,21 @@ def index():
                 Scatter(
                     name = 'Grid Search Opt.',
                     x=labels,
-                    y=report_cv['f1-score'],
+                    y=report_nocv['f1-score'],
                     yaxis='y2'
 
                 ),
 
-                Scatter(
-                    name = 'W.o. Grid Search Opt.',
-                    x=labels,
-                    y=report_nocv['f1-score'],
-                    yaxis='y2'
-                )
+                # Scatter(
+                #     name = 'W.o. Grid Search Opt.',
+                #     x=labels,
+                #     y=report_nocv['f1-score'],
+                #     yaxis='y2'
+                # )
             ],
 
             'layout': {
-                'title': 'Support and F1 Score by Label and Model',
+                'title': 'Support and F1 Score by Label - W.o Grid Search ',
                 'yaxis1': {
                     'title': "Messages",
                     'side' : 'left',
@@ -143,7 +147,51 @@ def index():
                 # 'barmode' : 'grouped'
             },
 
-            'secondary_y' : [False,True,True]
+
+        },
+
+        {
+            # TODO: can improve this by grouping by model/
+            # need concat with column indicating group
+            'data': [
+                Bar(
+                    name = 'Support',
+                    x=labels,
+                    y=report_cv['support'].iloc[:-4],
+                    yaxis='y1'
+
+                ),
+
+                Scatter(
+                    name = 'F1 Score',
+                    x=labels,
+                    y=report_cv['f1-score'],
+                    yaxis='y2'
+
+                ),
+
+            ],
+
+            'layout': {
+                'title': 'Support and F1 Score by Label - Grid Search Opt.',
+                'yaxis1': {
+                    'title': "Messages",
+                    'side' : 'left',
+                    'tickformat' :','
+                },
+                'yaxis2': {
+                    'title': "F1 Score",
+                    'side' : 'right',
+                    'tickformat' :'%',
+                    'overlaying': 'y'
+                },
+                'xaxis': {
+                    'title': "Label"
+                },
+                # 'barmode' : 'grouped'
+            },
+
+            # 'secondary_y' : [False,True,True]
         }
     ]
 

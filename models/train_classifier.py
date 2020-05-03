@@ -23,6 +23,8 @@ from pandas import DataFrame
 from typing import List
 
 def load_data(database_filepath: str) -> DataFrame:
+    """Loads data from .db file and returns X and Y DFs and column names for
+    ML pipeline"""
     engine = create_engine('sqlite:///' + database_filepath)
     df: DataFrame = pd.read_sql_table('dp.messages', engine)
 
@@ -33,6 +35,7 @@ def load_data(database_filepath: str) -> DataFrame:
 
 
 def tokenize(text: str) -> List[str]:
+    """Normaliztes text data and creates responding tokens for NLP models"""
 #     normalize
     text = re.sub(r'[^a-zA-z0-9]',' ', text.lower())
 
@@ -48,6 +51,7 @@ def tokenize(text: str) -> List[str]:
     return clean_tokens
 
 def build_model() -> GridSearchCV:
+    """Defines ML Pipeline and Parameters to be optimized in Grid Search"""
     pipeline : Pipeline = Pipeline([
     ('textpipe', CountVectorizer(tokenizer = tokenize)), # put TFIDF here if necessary
     ('tfidf', TfidfTransformer()),
@@ -64,12 +68,13 @@ def build_model() -> GridSearchCV:
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names) -> None:
-
+    """Tests model against training data and prints performance report"""
     Y_pred = model.predict(X_test)
     print(classification_report(Y_test.values,Y_pred,target_names=category_names))
 
 
 def save_model(model, model_filepath: str) -> None:
+    """Pickles and saves trained model"""
     with open(model_filepath, 'wb') as file:
         pickle.dump(model,file)
 

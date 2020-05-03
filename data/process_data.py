@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from pandas import DataFrame, Series
 
 def load_data(messages_filepath: str, categories_filepath: str) -> DataFrame:
+    """Load Data from the database files under messages_filepath
+    and categories_filepath and merge them"""
 
     msgs: DataFrame = pd.read_csv(messages_filepath)
     cats: DataFrame = pd.read_csv(categories_filepath)
@@ -16,6 +18,8 @@ def load_data(messages_filepath: str, categories_filepath: str) -> DataFrame:
 
 
 def clean_data(df: DataFrame) -> DataFrame:
+    """Builds category columns, converts columns to int,
+    throws out invalid values and duplicates """
     # create a dataframe of the 36 individual category columns
     cats: DataFrame = df.categories.str.split(';', expand=True)
 
@@ -42,7 +46,8 @@ def clean_data(df: DataFrame) -> DataFrame:
 
     return df
 
-def save_data(df: DataFrame, database_filename: str) -> None:
+def save_data(df: DataFrame, database_filename: str) -> None:#
+    """Saves cleaned data into .db file for later retrieval """
     engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('dp.messages', engine, index=False)
 
